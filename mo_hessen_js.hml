@@ -1,0 +1,182 @@
+<p>Moodle der Christian-Wirth-Schule Usingen<br></p>
+
+<script>
+    $(window).on("load", function() {
+        $("#page-navbar").each(function() {
+
+            function get_klasse() {
+                if ($("#page-navbar").is(':contains("#")')) {
+                    return $(".breadcrumb-item:contains('#')").text().split("-")[0].trim();
+                }
+            }
+
+            function replace_breadcrumb_inhalt() {
+                if ($("#page-navbar").is(':contains("Inhaltskurse")')) {
+                    var fach_search_text = $(".breadcrumb-item:contains('Inhaltskurse')").next().text().trim();
+                    var fach = $('.block_course_list li a:contains("' + fach_search_text + '"):contains("#")').clone();
+                    $(".breadcrumb-item:contains('Inhaltskurse')").each(function() {
+                        console.info("each");
+                        $(this).next().replaceWith(function() {
+                            fach = fach.wrap('<li class="breadcrumb-item"></li>').parent();
+                            console.info(fach, fach_search_text);
+                            return fach;
+                        });
+                        $(this).replaceWith(function() {
+                            var cls_search_text = $(this).next().text().split("-")[0].trim();
+                            var cls = $('.block_course_list li a:contains("' + cls_search_text + '"):not(:contains("-"))').clone();
+                            cls = cls.wrap('<li class="breadcrumb-item"></li>').parent();
+                            console.info(cls, cls_search_text);
+                            return cls;
+                        });
+                    });
+                }
+            }
+
+            function replace_breadcrumb_fach() {
+                if ($("#page-navbar").is(':not(:contains("Inhaltskurse"))')) {
+                    var klasse = get_klasse();
+                    var fach_search_text = $(".breadcrumb-item:contains('" + klasse + "')").text().split("-")[0];
+                    if (fach_search_text != undefined) {
+                        fach_search_text = fach_search_text.trim();
+                        var cls_link = $('.block_course_list li a:contains("' + fach_search_text + '"):contains("#"):not(:contains("-"))');
+                        console.info("search");
+                        console.info(fach_search_text, cls_link);
+                        $(".breadcrumb-item:contains('" + klasse + "')").before(function() {
+                            cls_link = cls_link.wrap('<li class="breadcrumb-item"></li>').parent();
+                            return cls_link;
+                        });
+                    }
+                }
+            }
+
+            replace_breadcrumb_fach();
+            replace_breadcrumb_inhalt();
+
+
+        });
+
+
+        $(".pagelayout-frontpage .coursebox").each(function() {
+            if (!$(this).is(':contains("#Klasse")') && !$(this).is(':contains("#Digitales Lehrerzimmer")')) {
+                $(this).hide();
+            }
+        });
+        $(".block_course_list li").each(function() {
+            if (!$(this).is(':contains("#Klasse")') && !$(this).is(':contains("#Digitales Lehrerzimmer")')) {
+                console.info("Hide element from course list block");
+                $(this).hide();
+            }
+        });
+
+        $('#nav-drawer .list-group-item:contains("Meine Kurse")').each(function() {
+            /*$(this).hide();
+            $(this).nextAll().hide();*/
+        });
+        /*
+              $('#nav-drawer .list-group-item:contains("#Digitales Lehrerzimmer")').each(function() {
+              $(this).after('<a href="" class="list-group-item list-group-item-action">Meine Fachkurse</a>');
+              $(this).after('<a href="https://mo5235.schule.hessen.de/course/index.php?categoryid=164" class="list-group-item list-group-item-action">Inhaltskurse</a>');
+              $(this).after('<a href="https://mo5235.schule.hessen.de/course/index.php?categoryid=164" class="list-group-item list-group-item-action">Inhaltskurs anlegen</a>');
+              console.info("Add Links");
+              });
+        */
+    });
+
+    /*
+    Backlinks
+    ---------
+    */
+    $(window).on("load", function() {
+        $(".single-section").after($(".breadcrumb-item:nth-last-child(2) a").clone().text("Zurück zum Kurs").wrap('<div class="topic-backlink"></div>').parent());
+        $(".activity-navigation").after($(".breadcrumb-item:nth-last-child(2) a").clone().text("Zurück zum Thema").wrap('<div class="topic-backlink"></div>').parent());
+    });
+
+    /*
+    Completion
+    -----------------
+    */
+
+    /*
+    Fügt ein Attribut "abgeschlossen" zu Aktivitäten hinzu
+    */
+    $(window).on("load", function() {
+        $(".activity").has("img[title*=Abgeschlossen]").each(function() {
+            $(this).addClass("completed");
+        });
+    });
+
+    // Add .completed to single section
+    $(window).on("load", function() {
+        $(".section-summary").each(function() {
+            var bearbeitungsstand = $(this).find(".activity-count:contains('Mein Bearbeitungsstand')").text();
+            bearbeitungsstand = bearbeitungsstand.split(":")[1];
+            if (bearbeitungsstand != undefined) {
+                var bearbeitet = bearbeitungsstand.split("/")[0].trim();
+                var gesamt = bearbeitungsstand.split("/")[1].trim();
+                if (bearbeitet == gesamt) {
+                    $(this).addClass("completed");
+                    console.info("completed");
+                } else if (bearbeitet == 0) {
+                    $(this).addClass("not-started");
+                } else if (bearbeitet > 0 && bearbeitet < gesamt) {
+                    $(this).addClass("incomplete");
+                }
+            }
+        });
+    });
+
+    /*
+    Quiz
+    -----------------
+    */
+
+    // Auto submit quiz
+    $(window).on("load", function() {
+        $("#page-mod-quiz-view .btn:contains('Test jetzt durchführen')").click();
+        $("#page-mod-quiz-summary .btn:contains('Abgabe')").click(); // Automatisch abgeben
+
+        $("#page-mod-quiz-summary .confirmation-buttons .btn:last-child").ready(function() {
+            console.info("bind")
+            $(this).mouseup(function() {
+                console.info("do")
+                $(".path-mod-quiz .btn:contains('Zurück zum Versuch')").click();
+            });
+        });
+    });
+
+
+    /*
+    Section Icons
+    -------------------
+    */
+    $(window).on("load", function() {
+
+
+        $('#page-content h2, section li.activity .activityinstance, section h3 a').each(function() {
+            if ($(this).is(':contains("Motivation")')) {
+                $(this).prepend('<i class="fa fa-star" style="padding-right:10px;"/>');
+                $(this).addClass("activity-marker");
+            }
+            if ($(this).is(':contains("Erarbeitung")')) {
+                $(this).prepend('<i class="fa fa-book" style="padding-right:10px;"/>');
+                $(this).addClass("activity-marker");
+            }
+            if ($(this).is(':contains("Regel")') || $(this).is(':contains("Übersicht")') || $(this).is(':contains("Zusammenfassung")')) {
+                $(this).prepend('<i class="fa fa-info-circle" style="padding-right:10px;"/>');
+                $(this).addClass("activity-marker");
+            }
+            if ($(this).is(':contains("Übung")') || $(this).is(':contains("Anwenden")')) {
+                $(this).prepend('<i class="fa fa-arrow-circle-right" style="padding-right:10px;"/>');
+                $(this).addClass("activity-marker");
+            }
+            if ($(this).is(':contains("Transfer")')) {
+                $(this).prepend('<i class="fa fa-lightbulb" style="padding-right:10px;"/>');
+                $(this).addClass("activity-marker");
+            }
+            if ($(this).is(':contains("Reflexion")') || $(this).is(':contains("Fragen")') || $(this).is(':contains("Evaluation")')) {
+                $(this).prepend('<i class="fa fa-question-circle" style="padding-right:10px;"/>');
+                $(this).addClass("activity-marker");
+            }
+        });
+    });
+</script>

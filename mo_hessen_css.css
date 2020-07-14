@@ -1,0 +1,288 @@
+/*
+#frontpage-course-list {
+    position: relative !important;
+  }
+  
+  .frontpage-course-list-all {
+    visibility: hidden;
+    height: 40px;
+  }
+  
+  .frontpage-course-list-all:after {
+    visibility: visible;
+    position: absolute;
+    top: 50px;
+    content: "Du hast dich noch in keinem Kurs eingetragen."
+  }
+  */
+
+
+/*
+Activity page
+-----------------
+*/
+
+.modified {
+    font-size: 10px;
+}
+
+.modified:before {
+    font-family: FontAwesome;
+    content: "\f073";
+    display: inline-block;
+    padding-right: 3px;
+    vertical-align: middle;
+    font-weight: 900;
+}
+
+
+/*
+  Activity-Navigation
+  ----------------------
+  */
+
+.activity-navigation {
+    border-top: 3px #ccc dashed;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+.activity-navigation .btn {
+    background-color: #efefef;
+    border: 2px solid #eee;
+    font-size: 11px;
+    text-decoration: none;
+    height: 45px;
+}
+
+.activity-navigation .btn:hover {
+    background-color: #cdcdcd;
+    border: 2px solid #eee;
+    text-decoration: none;
+}
+
+.activity-navigation #jump-to-activity {
+    visibility: hidden;
+}
+
+
+/*
+Backlinks
+---------
+*/
+
+.topic-backlink {
+    background-color: #efefef;
+    border: 2px solid #eee;
+    padding: 5px;
+    text-decoration: none;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 150px;
+    text-align: center;
+}
+
+.topic-backlink:hover {
+    background-color: #cdcdcd;
+    border: 2px solid #eee;
+    text-decoration: none;
+}
+
+
+/*
+Courses
+------------------
+*/
+
+
+/* Hide my courses block (needed for javascript*/
+
+.path-course .block_course_list.card {
+    display: none;
+}
+
+
+/*
+Section 0
+------------------
+*/
+
+#section-0 {
+    border: 2px dashed #cacaca;
+    border-radius: 10px;
+    background-color: #fafafa;
+}
+
+
+/*
+Fachkurs
+--------------------
+*/
+
+.activity.unilabel h3 {
+    border: 2px solid #ccc;
+    background-color: #ddd;
+    margin: 5px;
+}
+
+#page-course-view-weeksrev h3.sectionname:before {
+    font-family: FontAwesome;
+    content: "\f073";
+    display: inline-block;
+    padding-right: 10px;
+    vertical-align: middle;
+    font-weight: 600;
+    font-size: 14px;
+    color: #666;
+}
+
+#page-course-view-weeksrev .section .content {
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+
+/*
+Single Section
+---------------
+*/
+
+#sectionmenu {
+    display: none;
+}
+
+
+/*
+.course-content .single-section .section-navigation .mdl-right,
+.course-content .single-section .section-navigation .mdl-left {
+    display: none;
+}
+
+
+/*
+Activity-Navigation
+---------------------
+*/
+
+.section-navigation,
+.activity-navigation {
+    border-top: 3px #ccc dashed;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+.section-navigation a,
+.activity-navigation a {
+    background-color: #efefef;
+    border: 2px solid #eee;
+    font-size: 11px;
+    text-decoration: none;
+    height: 45px;
+}
+
+.section-navigation a:hover,
+.activity-navigation a:hover {
+    background-color: #cdcdcd;
+    border: 2px solid #eee;
+    text-decoration: none;
+}
+
+.section-navigation #jump-to-activity,
+.activity-navigation #jump-to-activity {
+    visibility: hidden;
+}
+
+
+/* 
+Unsorted
+--------------------
+*/
+
+.complete-feedback a {
+    padding: 0px 10px;
+    -webkit-box-shadow: 2px 2px 9px 2px #444;
+    box-shadow: 2px 2px 9px 2px #444;
+}
+
+.mform.full-width-labels .fitem.row {
+    border: solid #ddd 1px;
+    padding: 10px;
+    background-color: #eee;
+}
+
+td.cws-menu {
+    color: #fff;
+    background-color: #009bb1;
+    padding: 10px;
+}
+
+.complete-feedback a {
+    padding: 0px 10px;
+    -webkit-box-shadow: 2px 2px 9px 2px #444;
+    box-shadow: 2px 2px 9px 2px #444;
+}
+
+.mform.full-width-labels .fitem.row {
+    border: solid #ddd 1px;
+    padding: 10px;
+    background-color: #eee;
+}
+
+td.cws-menu {
+    color: #fff;
+    background-color: #009bb1;
+    padding: 10px;
+    border: 1px solid #e5f2f4;
+    text-align: center;
+}
+
+td.cws-menu:hover {
+    color: #fff;
+    background-color: #007889;
+}
+
+a.cws-menu {
+    display: block;
+    width: 100%;
+    color: white;
+    text-decoration: none;
+}
+
+a.cws-menu:hover {
+    color: white;
+    text-decoration: none;
+}
+
+#nav-drawer .list-group-item[data-type="20"] {
+    display: None;
+}
+
+#nav-drawer .list-group-item[data-key="mycourses"] {
+    display: None;
+}
+
+td.cws-menu:hover {
+    color: #fff;
+    background-color: #007889;
+}
+
+a.cws-menu {
+    display: block;
+    width: 100%;
+    color: white;
+    text-decoration: none;
+}
+
+a.cws-menu:hover {
+    color: white;
+    text-decoration: none;
+}
+
+#nav-drawer .list-group-item[data-type="20"] {
+    display: None;
+}
+
+#nav-drawer .list-group-item[data-key="mycourses"] {
+    display: None;
+}
