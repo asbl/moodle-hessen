@@ -3,7 +3,6 @@
 <script>
     $(window).on("load", function() {
         $("#page-navbar").each(function() {
-
             function get_klasse() {
                 if ($("#page-navbar").is(':contains("#")')) {
                     return $(".breadcrumb-item:contains('#')").text().split("-")[0].trim();
@@ -57,29 +56,62 @@
 
 
         $(".pagelayout-frontpage .coursebox").each(function() {
-            if (!$(this).is(':contains("#Klasse")') && !$(this).is(':contains("#Digitales Lehrerzimmer")')) {
-                $(this).hide();
-            }
-        });
-        $(".block_course_list li").each(function() {
-            if (!$(this).is(':contains("#Klasse")') && !$(this).is(':contains("#Digitales Lehrerzimmer")')) {
-                console.info("Hide element from course list block");
+            if (!($(this).is(':contains("#"):not(:contains("-"))') || $(this).is(':contains("#Digitales Lehrerzimmer")'))) {
                 $(this).hide();
             }
         });
 
-        $('#nav-drawer .list-group-item:contains("Meine Kurse")').each(function() {
-            /*$(this).hide();
-            $(this).nextAll().hide();*/
-        });
         /*
-              $('#nav-drawer .list-group-item:contains("#Digitales Lehrerzimmer")').each(function() {
-              $(this).after('<a href="" class="list-group-item list-group-item-action">Meine Fachkurse</a>');
-              $(this).after('<a href="https://mo5235.schule.hessen.de/course/index.php?categoryid=164" class="list-group-item list-group-item-action">Inhaltskurse</a>');
-              $(this).after('<a href="https://mo5235.schule.hessen.de/course/index.php?categoryid=164" class="list-group-item list-group-item-action">Inhaltskurs anlegen</a>');
-              console.info("Add Links");
-              });
+        * Filter Kurse nach Type
+        * ---------------------
         */
+
+
+        function filter_klassenkurse() {
+            $(".block_course_list li").each(function() {
+            $(this).show();
+            if (!($(this).is(':contains("#"):not(:contains("-"))'))) {
+                $(this).hide();
+            }
+        });
+        }
+
+        function filter_fachkurse() {
+            $(".block_course_list li").each(function() {
+            $(this).show();    
+            if (!($(this).is(':contains("#"):contains("-")'))) {
+                $(this).hide();
+            }
+        });
+        }
+
+        function filter_alle() {
+            $(".block_course_list li").each(function() {
+            $(this).show();
+        });
+        }
+
+        $(".block_course_list .content").prepend('<div class="filter"></div>'); 
+        $(".block_course_list .filter").prepend('<button class="btn filter_klassenkurse">Klassen</button>'); 
+        $(".block_course_list .filter").prepend('<button class="btn filter_fachkurse">Fachkurse</button>'); 
+        $(".block_course_list .filter").prepend('<button class="btn filter_alle">Alle</button>'); 
+
+        filter_klassenkurse();
+
+        $(".block_course_list .filter button.filter_klassenkurse").click(function() {
+            console.info("Filter Klassenkurse");
+            filter_klassenkurse();
+        });
+
+        $(".block_course_list .filter button.filter_fachkurse").click(function() {
+            console.info("Filter Fachkurse");
+            filter_fachkurse();
+        });
+
+        $(".block_course_list .filter button.filter_alle").click(function() {
+            console.info("Filter Inhaltskurse");
+            filter_alle();
+        });
     });
 
     /*
