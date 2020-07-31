@@ -1,8 +1,24 @@
-<p>Moodle der Christian-Wirth-Schule Usingen<br></p>
+<p>Moodle der Christian-Wirth-Schule Usingen
+</p>
 
 <script>
-    $(window).on("load", function() {
-        $("#page-navbar").each(function() {
+
+    /* Ist User ein Lehrer */$
+
+    var isTeacher = $('#nav-drawer .list-group li:contains("Lehrerzimmer")').length>0;
+    // Es wird überprüft, ob der Lehrer im Kurs Lehrerzimmer ist. Dieser Kurs befindet sich (versteckt) in der Seitenleiste
+
+    /* Breadcrumbs
+    ==============
+
+    Ersetzt die Breadcrumbs so dass ein Trail zum Inhaltskurs sichtbar ist.
+    Voraussetzung:
+    Klassenkurse heißen #5C, #6C, ... (ohne weiteres Anhängsel)
+    Fachlurse heißen #5C-Mathe, #5C-Deutsch, ...
+    Inhaltskurse haben keine sepzielle Beichnung, finden sich aber in einem Unterkursbereich des Kursbereiches Inhaltskurse
+    */
+    $(window).on("load", function () {
+        $("#page-navbar").each(function () {
             function get_klasse() {
                 if ($("#page-navbar").is(':contains("#")')) {
                     return $(".breadcrumb-item:contains('#')").text().split("-")[0].trim();
@@ -13,18 +29,15 @@
                 if ($("#page-navbar").is(':contains("Inhaltskurse")')) {
                     var fach_search_text = $(".breadcrumb-item:contains('Inhaltskurse')").next().text().trim();
                     var fach = $('.block_course_list li a:contains("' + fach_search_text + '"):contains("#")').clone();
-                    $(".breadcrumb-item:contains('Inhaltskurse')").each(function() {
-                        console.info("each");
-                        $(this).next().replaceWith(function() {
+                    $(".breadcrumb-item:contains('Inhaltskurse')").each(function () {
+                        $(this).next().replaceWith(function () {
                             fach = fach.wrap('<li class="breadcrumb-item"></li>').parent();
-                            console.info(fach, fach_search_text);
                             return fach;
                         });
-                        $(this).replaceWith(function() {
+                        $(this).replaceWith(function () {
                             var cls_search_text = $(this).next().text().split("-")[0].trim();
                             var cls = $('.block_course_list li a:contains("' + cls_search_text + '"):not(:contains("-"))').clone();
                             cls = cls.wrap('<li class="breadcrumb-item"></li>').parent();
-                            console.info(cls, cls_search_text);
                             return cls;
                         });
                     });
@@ -38,9 +51,7 @@
                     if (fach_search_text != undefined) {
                         fach_search_text = fach_search_text.trim();
                         var cls_link = $('.block_course_list li a:contains("' + fach_search_text + '"):contains("#"):not(:contains("-"))');
-                        console.info("search");
-                        console.info(fach_search_text, cls_link);
-                        $(".breadcrumb-item:contains('" + klasse + "')").before(function() {
+                        $(".breadcrumb-item:contains('" + klasse + "')").before(function () {
                             cls_link = cls_link.wrap('<li class="breadcrumb-item"></li>').parent();
                             return cls_link;
                         });
@@ -53,64 +64,196 @@
 
 
         });
+    });
 
 
-        $(".pagelayout-frontpage .coursebox").each(function() {
-            if (!($(this).is(':contains("#"):not(:contains("-"))') || $(this).is(':contains("#Digitales Lehrerzimmer")'))) {
-                $(this).hide();
+    /* Kurse
+    ========
+    */
+
+    /* Markiere Kurse als Klassenkurs, Fachkurs, ...
+    */
+    function mark_courses(parent_element, filter_element) {
+        $(parent_element).find(filter_element).each(function () {
+            if ($(this).text().startsWith("#Klasse:")) {
+                $(this).addClass("klassenkurs");
+            }
+            if ($(this).text().startsWith("Fach:")) {
+                $(this).addClass("fachkurs");
+            }
+            if ($(this).text().startsWith("Thema:")) {
+                $(this).addClass("themenkurs");
+            }
+            if ($(this).text().indexOf("Lehrerzimmer") >= 0) {
+                $(this).addClass("lehrerzimmer");
+            }
+            if ($(this).text().startsWith("Fachschaft")) {
+                $(this).addClass("fachschaft");
+            }
+            if ($(this).text().startsWith("AG")) {
+                $(this).addClass("ag");
+            }
+            if ($(this).text().startsWith("Fortbildung")) {
+                $(this).addClass("fortbildung");
             }
         });
+    }
 
-        /*
-        * Filter Kurse nach Type
-        * ---------------------
-        */
+    /* Filter Kurse nach Typ
+    ---------------------
+    Filtert Kurse nach Typ
+    Fügt Buttons in einem Kurs-Block hinzu um Kurse nach Klasse, Fach oder Inhalt zu filtern.
 
+    parent_element: The selector of the element to search for e.g. .block_course_list
+    filter_element: The elements to filter for: e.g li
+    */
 
-        function filter_klassenkurse() {
-            $(".block_course_list li").each(function() {
-            $(this).show();
-            if (!($(this).is(':contains("#"):not(:contains("-"))'))) {
-                $(this).hide();
-            }
+    function filter_courses(parent_element, filter_element, content_area_selector) {
+
+        function filter_klassenkurse(parent_element) {
+            $(parent_element).find(filter_element).each(function () {
+                $(this).show();
+                if (!($(this).text().startsWith("#Klasse:"))) {
+                    $(this).hide();
+                }
+            });
+        }
+
+        function filter_fachkurse(parent_element, filter_element) {
+            $(parent_element).find(filter_element).each(function () {
+                $(this).show();
+                console.info($(this).text());
+                if (!($(this).text().startsWith("Fach:"))) {
+                    $(this).hide();
+                }
+            });
+        }
+
+        function filter_themenkurse(parent_element, filter_element) {
+            $(parent_element).find(filter_element).each(function () {
+                $(this).show();
+                console.info($(this).text());
+                if (!($(this).text().startsWith("Thema:"))) {
+                    $(this).hide();
+                }
+            });
+        }
+
+        function filter_schulkurse(parent_element, filter_element) {
+            $(parent_element).find(filter_element).each(function () {
+                $(this).show();
+                console.info($(this).text());
+                if (!  ($(this).text().indexOf("Lehrerzimmer") >= 0 || $(this).text().startsWith("Fachschaft") || $(this).text().startsWith("AG") || $(this).text().startsWith("Fortbildung") ) ) {
+                    $(this).hide();
+                }
+            });
+        }
+
+        function filter_alle(parent_element, filter_element) {
+            $(parent_element).find(filter_element).each(function () {
+                $(this).show();
+            });
+        }
+
+        if (content_area_selector) {
+            $(parent_element).find(content_area_selector).prepend('<div class="courses_filter"></div>');
+        } else {
+            $(parent_element).before('<div class="courses_filter"></div>');
+        }
+        $(".courses_filter").append('<button class="btn filter_klassenkurse active">Klassen</button>');
+        $(".courses_filter").append('<button class="btn filter_fachkurse">Fächer</button>');
+        $(".courses_filter").append('<button class="btn filter_themenkurse">Themen</button>');
+        $(".courses_filter").append('<button class="btn filter_alle">Alle</button>');
+        
+        
+        
+
+        filter_klassenkurse(parent_element, filter_element);
+
+        $(".courses_filter .btn.filter_klassenkurse").click(function () {
+            filter_klassenkurse(parent_element, filter_element);
+            $(this).addClass("active");
+            $(this).siblings().removeClass('active');
+        });
+
+        $(".courses_filter .btn.filter_fachkurse").click(function () {
+            filter_fachkurse(parent_element, filter_element);
+            $(this).addClass("active");
+            $(this).siblings().removeClass('active');
+        });
+
+        $(".courses_filter .btn.filter_themenkurse").click(function () {
+            filter_themenkurse(parent_element, filter_element);
+            $(this).addClass("active");
+            $(this).siblings().removeClass('active');
+        });
+
+        $(".courses_filter .btn.filter_alle").click(function () {
+            filter_alle(parent_element, filter_element);
+            $(this).addClass("active");
+            $(this).siblings().removeClass('active');
+        });
+        if (isTeacher) {
+            $(".courses_filter").append('<button class="btn filter_schulkurse">Schulorganisation</button>');
+            $(".courses_filter .btn.filter_schulkurse").click(function () {
+            filter_schulkurse(parent_element, filter_element);
+            $(this).addClass("active");
+            $(this).siblings().removeClass('active');
         });
         }
 
-        function filter_fachkurse() {
-            $(".block_course_list li").each(function() {
-            $(this).show();    
-            if (!($(this).is(':contains("#"):contains("-")'))) {
-                $(this).hide();
-            }
-        });
+
+
+    }
+    $(window).on("load", function () {
+        if ($(".frontpage-course-list-enrolled").length > 0) {
+            mark_courses(".frontpage-course-list-enrolled", ".coursebox");
+            filter_courses(".frontpage-course-list-enrolled", ".coursebox", false);
+        }
+        if ($(".block_course_list").length > 0) {
+            mark_courses(".block_course_list", "li");
+            filter_courses(".block_course_list", "li", ".content");
         }
 
-        function filter_alle() {
-            $(".block_course_list li").each(function() {
-            $(this).show();
-        });
+        if ((".path-course .category-browse").length > 0) {
+            mark_courses(".path-course .category-browse", ".coursebox");
         }
+    });
 
-        $(".block_course_list .content").prepend('<div class="filter"></div>'); 
-        $(".block_course_list .filter").prepend('<button class="btn filter_klassenkurse">Klassen</button>'); 
-        $(".block_course_list .filter").prepend('<button class="btn filter_fachkurse">Fachkurse</button>'); 
-        $(".block_course_list .filter").prepend('<button class="btn filter_alle">Alle</button>'); 
+    /* Meine Kurse
+    ---------------
+    Seite "Meine Kurse" - Lädt den Kurse-Block von der Startseite mit Ajax
+    */
 
-        filter_klassenkurse();
+    $(window).on("load", function () {
 
-        $(".block_course_list .filter button.filter_klassenkurse").click(function() {
-            console.info("Filter Klassenkurse");
-            filter_klassenkurse();
+        var page_id = 9460;
+        // Die Seite wurde als Aktivität auf der Startseite angelegt und dort verborgen
+        frontpage_url = "https://mo5235.schule.hessen.de/?redirect=0";
+        try {
+            var htmltext = $.ajax({url: frontpage_url, cache: false, async: false, dataType: "html"}).responseText;
+        } catch (e) {
+            console.log('Fehler beim Linkermitteln: ' + e);
+        }
+        var front_page = $(htmltext);
+        current_url = window.location.search;
+        if (current_url.includes(page_id)) {
+            $("#region-main .generalbox").text("");
+            $("#region-main .generalbox").prepend(front_page.find(".frontpage-course-list-enrolled").clone());
+            filter_courses(".frontpage-course-list-enrolled", ".coursebox", false);
+            mark_courses(".frontpage-course-list-enrolled", ".coursebox", false);
+        }
+    });
+
+    /* Kursübersicht */
+    $
+
+    $(window).on("load", function () {
+        $(".courses").each(function () {
+            $(this).addClass("card-columns");
         });
-
-        $(".block_course_list .filter button.filter_fachkurse").click(function() {
-            console.info("Filter Fachkurse");
-            filter_fachkurse();
-        });
-
-        $(".block_course_list .filter button.filter_alle").click(function() {
-            console.info("Filter Inhaltskurse");
-            filter_alle();
+        $(".courses .coursebox").each(function () {
+            $(this).addClass("card");
         });
     });
 
@@ -118,28 +261,27 @@
     Backlinks
     ---------
     */
-    $(window).on("load", function() {
+    $(window).on("load", function () {
         $(".single-section").after($(".breadcrumb-item:nth-last-child(2) a").clone().text("Zurück zum Kurs").wrap('<div class="topic-backlink"></div>').parent());
         $(".activity-navigation").after($(".breadcrumb-item:nth-last-child(2) a").clone().text("Zurück zum Thema").wrap('<div class="topic-backlink"></div>').parent());
     });
 
     /*
     Completion
-    -----------------
-    */
+    -----------
 
     /*
-    Fügt ein Attribut "abgeschlossen" zu Aktivitäten hinzu
-    */
-    $(window).on("load", function() {
-        $(".activity").has("img[title*=Abgeschlossen]").each(function() {
+        Fügt ein Attribut "abgeschlossen" zu Aktivitäten hinzu
+        */
+    $(window).on("load", function () {
+        $(".activity").has("img[title*=Abgeschlossen]").each(function () {
             $(this).addClass("completed");
         });
     });
 
     // Add .completed to single section
-    $(window).on("load", function() {
-        $(".section-summary").each(function() {
+    $(window).on("load", function () {
+        $(".section-summary").each(function () {
             var bearbeitungsstand = $(this).find(".activity-count:contains('Mein Bearbeitungsstand')").text();
             bearbeitungsstand = bearbeitungsstand.split(":")[1];
             if (bearbeitungsstand != undefined) {
@@ -147,7 +289,6 @@
                 var gesamt = bearbeitungsstand.split("/")[1].trim();
                 if (bearbeitet == gesamt) {
                     $(this).addClass("completed");
-                    console.info("completed");
                 } else if (bearbeitet == 0) {
                     $(this).addClass("not-started");
                 } else if (bearbeitet > 0 && bearbeitet < gesamt) {
@@ -158,33 +299,70 @@
     });
 
     /*
-    Quiz
-    -----------------
-    */
+        Quiz
+        -----------------
+        */
 
     // Auto submit quiz
-    $(window).on("load", function() {
+    $(window).on("load", function () {
         $("#page-mod-quiz-view .btn:contains('Test jetzt durchführen')").click();
         $("#page-mod-quiz-summary .btn:contains('Abgabe')").click(); // Automatisch abgeben
 
-        $("#page-mod-quiz-summary .confirmation-buttons .btn:last-child").ready(function() {
-            console.info("bind")
-            $(this).mouseup(function() {
-                console.info("do")
+        $("#page-mod-quiz-summary .confirmation-buttons .btn:last-child").ready(function () {
+            $(this).mouseup(function () {
                 $(".path-mod-quiz .btn:contains('Zurück zum Versuch')").click();
             });
         });
     });
 
+    /*
+        Activity Navigation
+        -------------------
+    */
+    $(window).on("load", function () {
+        $(".path-mod").each(function () {
+            console.info("add activity navigation");
+            var topic_link = $(".breadcrumb-item:nth-last-child(2) a").attr('href');
+            try {
+                var htmltext = $.ajax({url: topic_link, cache: false, async: false, dataType: "html"}).responseText;
+            } catch (e) {
+                console.log('Fehler beim Linkermitteln: ' + e);
+            }
+            topic_page = $(htmltext);
+            console.info("ajax activity-navigation");
+            console.info(topic_page);
+            var activity_instances = $(topic_page).find(".single-section .activityinstance > a");
+            var activity_title = $(".breadcrumb-item:nth-last-child(1)").text().trim();
+            var topic_title = $(".breadcrumb-item:nth-last-child(2)").text().trim();
+            var next_topic = $(topic_page).find(".mdl-right a");
+            var last_topic = $(topic_page).find(".mdl-left a");
+            var actual_Acitivity = activity_instances.find(":contains(" + activity_title + ")").parent();
+            var actual_acitivity_index = activity_instances.index(actual_Acitivity);
+            console.info(activity_instances, activity_title, next_topic, actual_Acitivity, actual_acitivity_index);
+            $("#region-main .card-block").after('<div class="mt-5 mb-1 activity-navigation container-fluid"><div class="row"><div class="col-md-4"><div class="float-left back"></div></div><div class="col-md-4"><div class="mdl-align"></div></div><div class="col-md-4"><div class="float-right next"></div></div></div></div>');
+            if (actual_acitivity_index == 1 && last_topic.length > 0) {
+                $(".activity-navigation .back").prepend(last_topic.first().clone());
+            } else if (actual_acitivity_index > 1) {
+                console.info("get", activity_instances.length, actual_acitivity_index - 1)
+                $(".activity-navigation .back").prepend(activity_instances.get(actual_acitivity_index - 1).clone());
+            }
+            if (actual_acitivity_index + 1 == activity_instances.length && next_topic.length > 0) {
+                $(".activity-navigation .next").prepend(next_topic.first().clone());
+            } else if (actual_acitivity_index + 1 < activity_instances.length) {
+                console.info("get", activity_instances.length, actual_acitivity_index + 1)
+                $(".activity-navigation .next").prepend(activity_instances.get(actual_acitivity_index + 1).clone());
+            }
+        });
+    });
 
     /*
-    Section Icons
-    -------------------
-    */
-    $(window).on("load", function() {
+        Section Icons   
+        -------------------
+        */
+    $(window).on("load", function () {
 
 
-        $('#page-content h2, section li.activity .activityinstance, section h3 a').each(function() {
+        $('#page-content h2, section li.activity .activityinstance, section h3 a').each(function () {
             if ($(this).is(':contains("Motivation")')) {
                 $(this).prepend('<i class="fa fa-star" style="padding-right:10px;"/>');
                 $(this).addClass("activity-marker");
