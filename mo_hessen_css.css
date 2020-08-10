@@ -38,38 +38,37 @@ Kurs - Kurs-Blöcke
 /* Kurs Filter Buttons */
 
 .courses_filter {
-  padding-top: 5px;
-  border-bottom: 1px solid #ccc;
-  margin-bottom: 10px;
+    padding-top: 5px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
 }
 
-.courses_filter .btn{
-  border: 1px solid #ccc;
+.courses_filter .btn {
+    border: 1px solid #ccc;
 }
 
 /* Course-Cards auf Startseite */
 .courses.card-columns {
-  margin-top: 30px;
+    margin-top: 30px;
 }
-.courses .coursebox {
-  padding: 0px;
-  border: 1px solid #aaa;
-  background-color: #fafafa !important;
-  margin-bottom: 10px;
-  border-radius: 2px;
-  width: 200px;
-  min-height: 120px;
+.courses .coursebox.bard {
+    padding: 0;
+    border: 1px solid #aaa;
+    background-color: #fafafa !important;
+    margin-bottom: 10px;
+    border-radius: 2px;
+    width: 200px;
 }
 
-.coursebox .content .teachers  {
+.coursebox.card .content .teachers {
     width: 100% !important;
     margin-left: 40px;
-  }
+}
 
-.coursebox .content .teachers li {
-  display: inline;
-  padding-right: 8px !important; 
-  font-size: 10px;
+.coursebox.card .content .teachers li {
+    display: inline;
+    padding-right: 8px !important;
+    font-size: 10px;
 
 }
 
@@ -78,64 +77,94 @@ Kurs - Kurs-Blöcke
     text-align: center;
     padding-top: 20px;
     width: 100%;
-    margin: 0px;
+    margin: 0;
     padding-left: 5px;
     padding-right: 5px;
 }
 
 .coursebox.card > .info > .coursename a {
-  background-image: none !important;
-  padding-left: 0px !important;
-
+    background-image: none !important;
+    padding-left: 0 !important;
+    min-height: 120px;
+    padding: 20px !important;
+    background-color: white;
 }
-.coursebox .content .summary, .coursebox .content .coursecat {
-  display: none;
+
+.coursebox.card > .info > .coursename a:hover {
+    background-color: #eee;
+}
+
+.coursebox.card .moreinfo, .coursebox.card .enrolmenticons {
+    position: absolute;
+    right: 10px;
+}
+
+.coursebox.card .content .summary,
+.coursebox.card .content .coursecat {
+    display: none;
 }
 
 .coursebox.card .content .courseimage {
-  width: 100% !important;
-  margin: 0px !important;
-  float:none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    float: none !important;
 
 }
 
 .coursebox.card .content .courseimage img {
-  width: 100% !important;
-  max-width: 100% !important;
-  max-height: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
 }
 
 .coursebox.card .content .teachers {
-  display: none;
+    display: none;
 }
 
+.coursebox.card h3 {
+    padding: 0px !important
+}
+
+li.klassenkurs,
 .coursebox.klassenkurs {
-    border: 2px solid #2aa !important
+    border: 1px solid var(--blue) !important;
+    box-shadow: inset 0px 0px 5px var(--blue);
 }
 
+li.fachkurs,
 .coursebox.fachkurs {
-    border: 2px solid #69f !important
+    border: 1px solid var(--teal) !important;
+    box-shadow: inset 0px 0px 5px var(--teal);
 }
 
+li.themenkurs,
 .coursebox.themenkurs {
-    border: 2px solid #f82 !important
+    border: 1px solid var(--cyan) !important;
+    box-shadow: inset 0px 0px 5px var(--cyan);
 }
 
+li.lehrerzimmer,
 .coursebox.lehrerzimmer {
-    border: 2px solid #f05 !important
+    border: 1px solid var(--red) !important;
+    box-shadow: inset 0px 0px 5px var(--red);
 }
 
+li.fachschaft,
 .coursebox.fachschaft {
-    border: 2px solid #ffa !important
+    border: 1px solid var(--indigo) !important;
+    box-shadow: inset 0px 0px 5px var(--indigo);
 }
 
+li.fortbildung,
 .coursebox.fortbildung {
-    border: 2px solid #c2f !important
+    border: 1px solid var(--purple) !important;
+    box-shadow: inset 0px 0px 5px var(--purple);
 }
 
 .courses > .paging.paging-morelink {
     border: 1px solid gray;
     background-color: #fafafa;
+    border: 1px solid #ccc;
 }
 
 
@@ -180,6 +209,49 @@ Kurs - Kursansicht
     margin-top: 20px;
 }
 
+/* Block course list on dashboard
+   -------------------------------
+*/
+
+.path-my .block_course_list li a {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #ccc;
+}
+
+.path-my .block_course_list li a:hover {
+    background-color: #eee;
+    border: 1px solid #cacaca;
+    text-decoration: none;
+}
+
+
+#paging-control-limit-container-1 {
+    display: none;
+}
+
+/*
+Zeitleiste
+------------
+*/
+
+    
+
+/* Filter */
+.block-timeline .container.p-0.pb-3,
+.block-myoverview.block-cards > div:nth-child(1) {
+    border: 1px solid #ddd;
+    padding: 10px !important;
+    margin-bottom: 10px;
+    background-color: #f8f8f8;
+}
+.block-timeline .container.p-0.pb-3 button,
+.block-myoverview.block-cards > div:nth-child(1) button{
+    background-color: white;
+}
+
+
 
 /*
 Single Section
@@ -189,13 +261,62 @@ Single Section
 #sectionmenu {
     display: none;
 }
-
-
-/*
-.course-content .single-section .section-navigation .mdl-right,
-.course-content .single-section .section-navigation .mdl-left {
-    display: none;
+.path-course-view h3.sectionname,
+.path-course-view .topics h3.section-title {
+    padding: 0 !important;
 }
+
+.path-course-view .topics h3.section-title.template a {
+    display: block;
+    width: 100%;
+    padding: 15px 10px;
+    color: white !important;
+}
+
+.path-course-view h3.section-title.template a:hover {
+    text-decoration: none;
+    box-shadow:0px 0px 0px 2px #244 inset;
+}
+
+.path-course-view h3.sectionname.template {
+    padding: 15px 10px !important;
+    color: white !important;
+    box-sizing: border-box;
+}
+.path-course-view .course-content .navigationtitle h3.sectionname.template span{
+    color: white !important;
+}
+
+.path-course-view .course-content .navigationtitle h3.sectionname.template span{
+    color: white !important;
+}
+
+.path-course-view h3.sectionname.motivation,
+.path-course-view .topics h3.section-title.motivation {
+    background-color: #EF798A !important;
+}
+.path-course-view h3.sectionname.erarbeitung,
+.path-course-view .topics h3.section-title.erarbeitung {
+    background-color: #F7A9A8 !important;
+}
+.path-course-view h3.sectionname.regel,
+.path-course-view .topics h3.section-title.regel {
+    background-color: #f5d491 !important;
+}
+.path-course-view h3.sectionname.uebung,
+.path-course-view .topics h3.section-title.uebung {
+    background-color: #F2B5D4 !important;  
+  }
+  .path-course-view h3.sectionname.transfer,
+.path-course-view .topics h3.section-title.transfer {
+    background-color: #664147 !important; 
+  }
+  .path-course-view h3.sectionname.reflexion,
+  .path-course-view .topics h3.section-title.reflexion {
+    background-color: #613F75 !important;  
+  }
+ 
+
 
 
 /*
@@ -227,23 +348,28 @@ Aktivitäten
 }
 
 
+/* Section and Activity-Navigation */
 
-/* Activity-Navigation */
+/* Don't display section navigation */
+.course-content .single-section .section-navigation .mdl-right,
+.course-content .single-section .section-navigation .mdl-left {
+    display: none;
+}
 
-.section-navigation,
-.activity-navigation {
-    border-top: 3px #ccc dashed;
-    margin-top: 10px;
-    padding-top: 10px;
+.section-navigation, .mb-1.section-navigation,
+.activity-navigation, .mb-1.activity-navigation {
+    border-top: 3px #ccc solid;
+    margin-top: 30px !important;
+    padding-top: 20px;
 }
 
 .section-navigation a,
 .activity-navigation a {
     background-color: #efefef;
     border: 2px solid #eee;
-    font-size: 11px;
+    font-size: 14px;
     text-decoration: none;
-    height: 45px;
+    padding: 10px;
 }
 
 .section-navigation a:hover,
@@ -280,6 +406,25 @@ Aktivitäten
     font-weight: bold;
 }
 
+/*
+Navbar
+-------
+*/
+
+.navbar-light .navbar-brand {
+    display: none !important;
+}
+
+.navbar-nav > li.nav-item:hover > a {
+    color: #aef !important;
+}
+
+/*
+Frontpage
+----------
+*/
+
+.activity
 
 /* 
 Unsorted
@@ -287,7 +432,7 @@ Unsorted
 */
 
 .complete-feedback a {
-    padding: 0px 10px;
+    padding: 0 10px;
     -webkit-box-shadow: 2px 2px 9px 2px #444;
     box-shadow: 2px 2px 9px 2px #444;
 }
@@ -305,7 +450,7 @@ td.cws-menu {
 }
 
 .complete-feedback a {
-    padding: 0px 10px;
+    padding: 0 10px;
     -webkit-box-shadow: 2px 2px 9px 2px #444;
     box-shadow: 2px 2px 9px 2px #444;
 }

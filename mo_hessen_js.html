@@ -3,7 +3,7 @@
 
 <script>
 
-    /* Ist User ein Lehrer */$
+    /* Ist User ein Lehrer */
 
     var isTeacher = $('#nav-drawer .list-group li:contains("Lehrerzimmer")').length>0;
     // Es wird überprüft, ob der Lehrer im Kurs Lehrerzimmer ist. Dieser Kurs befindet sich (versteckt) in der Seitenleiste
@@ -73,27 +73,27 @@
 
     /* Markiere Kurse als Klassenkurs, Fachkurs, ...
     */
-    function mark_courses(parent_element, filter_element) {
+    function mark_courses(parent_element, filter_element, coursename_selector) {
         $(parent_element).find(filter_element).each(function () {
-            if ($(this).text().startsWith("#Klasse:")) {
+            if ($(this).find(coursename_selector).text().trim().startsWith("#Klasse:")) {
                 $(this).addClass("klassenkurs");
             }
-            if ($(this).text().startsWith("Fach:")) {
+            if ($(this).find(coursename_selector).text().trim().startsWith("Fach:")) {
                 $(this).addClass("fachkurs");
             }
-            if ($(this).text().startsWith("Thema:")) {
+            if ($(this).find(coursename_selector).text().trim().startsWith("Thema:")) {
                 $(this).addClass("themenkurs");
             }
-            if ($(this).text().indexOf("Lehrerzimmer") >= 0) {
+            if ($(this).find(coursename_selector).text().trim().indexOf("Lehrerzimmer") >= 0) {
                 $(this).addClass("lehrerzimmer");
             }
-            if ($(this).text().startsWith("Fachschaft")) {
+            if ($(this).find(coursename_selector).text().trim().startsWith("Fachschaft")) {
                 $(this).addClass("fachschaft");
             }
-            if ($(this).text().startsWith("AG")) {
+            if ($(this).find(coursename_selector).text().trim().startsWith("AG")) {
                 $(this).addClass("ag");
             }
-            if ($(this).text().startsWith("Fortbildung")) {
+            if ($(this).find(coursename_selector).text().trim().startsWith("Fortbildung")) {
                 $(this).addClass("fortbildung");
             }
         });
@@ -106,15 +106,17 @@
 
     parent_element: The selector of the element to search for e.g. .block_course_list
     filter_element: The elements to filter for: e.g li
+    content_area_selector: Where should the filter_classes added
+    coursename_selector: Where is the coursename?
     */
 
-    function filter_courses(parent_element, filter_element, content_area_selector) {
+    function filter_courses(parent_element, filter_element, content_area_selector, coursename_selector) {
 
         function filter_klassenkurse(parent_element) {
             $(parent_element).find(filter_element).each(function () {
                 $(this).show();
-                if (!($(this).text().startsWith("#Klasse:"))) {
-                    $(this).hide();
+                    if (!$(this).find(coursename_selector).text().trim().startsWith("#Klasse:")) {
+                        $(this).hide();
                 }
             });
         }
@@ -122,8 +124,7 @@
         function filter_fachkurse(parent_element, filter_element) {
             $(parent_element).find(filter_element).each(function () {
                 $(this).show();
-                console.info($(this).text());
-                if (!($(this).text().startsWith("Fach:"))) {
+                if (!$(this).find(coursename_selector).text().trim().startsWith("Fach:") ) {
                     $(this).hide();
                 }
             });
@@ -132,8 +133,7 @@
         function filter_themenkurse(parent_element, filter_element) {
             $(parent_element).find(filter_element).each(function () {
                 $(this).show();
-                console.info($(this).text());
-                if (!($(this).text().startsWith("Thema:"))) {
+                if (!$(this).find(coursename_selector).text().trim().startsWith("Thema:")) {
                     $(this).hide();
                 }
             });
@@ -142,8 +142,11 @@
         function filter_schulkurse(parent_element, filter_element) {
             $(parent_element).find(filter_element).each(function () {
                 $(this).show();
-                console.info($(this).text());
-                if (!  ($(this).text().indexOf("Lehrerzimmer") >= 0 || $(this).text().startsWith("Fachschaft") || $(this).text().startsWith("AG") || $(this).text().startsWith("Fortbildung") ) ) {
+                if (!  ($(this).find(coursename_selector).text().trim().indexOf("Lehrerzimmer") >= 0 
+                || $(this).find(coursename_selector).text().trim().startsWith("Fachschaft") 
+                || $(this).find(coursename_selector).text().trim().startsWith("AG") 
+                || $(this).find(coursename_selector).text().trim().startsWith("Fortbildung") ) ) {
+                
                     $(this).hide();
                 }
             });
@@ -155,47 +158,47 @@
             });
         }
 
-        if (content_area_selector) {
-            $(parent_element).find(content_area_selector).prepend('<div class="courses_filter"></div>');
-        } else {
-            $(parent_element).before('<div class="courses_filter"></div>');
+        var filter_class = $('<div class="courses_filter"></div>')
+        filter_class.append('<button class="btn filter_klassenkurse active">Klassen</button>');
+        filter_class.append('<button class="btn filter_fachkurse">Fächer</button>');
+        filter_class.append('<button class="btn filter_themenkurse">Themen</button>');
+        if (isTeacher) {
+            filter_class.append('<button class="btn filter_schulkurse">Schulorganisation</button>');
         }
-        $(".courses_filter").append('<button class="btn filter_klassenkurse active">Klassen</button>');
-        $(".courses_filter").append('<button class="btn filter_fachkurse">Fächer</button>');
-        $(".courses_filter").append('<button class="btn filter_themenkurse">Themen</button>');
-        $(".courses_filter").append('<button class="btn filter_alle">Alle</button>');
-        
-        
-        
-
+        filter_class.append('<button class="btn filter_alle">Alle</button>');
+        if (content_area_selector) {
+            $(parent_element).find(content_area_selector).prepend(filter_class);
+        } else {
+            $(parent_element).before(filter_class);
+        }
+        $(document).ajaxComplete(function() {
         filter_klassenkurse(parent_element, filter_element);
-
-        $(".courses_filter .btn.filter_klassenkurse").click(function () {
+        });
+        /* Add events  */
+        filter_class.find(".btn.filter_klassenkurse").click(function () {
             filter_klassenkurse(parent_element, filter_element);
             $(this).addClass("active");
             $(this).siblings().removeClass('active');
         });
 
-        $(".courses_filter .btn.filter_fachkurse").click(function () {
+        filter_class.find(".btn.filter_fachkurse").click(function () {
             filter_fachkurse(parent_element, filter_element);
             $(this).addClass("active");
             $(this).siblings().removeClass('active');
         });
-
-        $(".courses_filter .btn.filter_themenkurse").click(function () {
+        filter_class.find(".btn.filter_themenkurse").click(function () {
             filter_themenkurse(parent_element, filter_element);
             $(this).addClass("active");
             $(this).siblings().removeClass('active');
         });
 
-        $(".courses_filter .btn.filter_alle").click(function () {
+        filter_class.find(".btn.filter_alle").click(function () {
             filter_alle(parent_element, filter_element);
             $(this).addClass("active");
             $(this).siblings().removeClass('active');
         });
         if (isTeacher) {
-            $(".courses_filter").append('<button class="btn filter_schulkurse">Schulorganisation</button>');
-            $(".courses_filter .btn.filter_schulkurse").click(function () {
+            filter_class.find(".btn.filter_schulkurse").click(function () {
             filter_schulkurse(parent_element, filter_element);
             $(this).addClass("active");
             $(this).siblings().removeClass('active');
@@ -207,16 +210,16 @@
     }
     $(window).on("load", function () {
         if ($(".frontpage-course-list-enrolled").length > 0) {
-            mark_courses(".frontpage-course-list-enrolled", ".coursebox");
-            filter_courses(".frontpage-course-list-enrolled", ".coursebox", false);
+            mark_courses(".frontpage-course-list-enrolled", ".coursebox",  ".coursename a");
+            filter_courses(".frontpage-course-list-enrolled", ".coursebox", false, ".coursename");
         }
         if ($(".block_course_list").length > 0) {
-            mark_courses(".block_course_list", "li");
-            filter_courses(".block_course_list", "li", ".content");
+            mark_courses(".block_course_list", "li", "a");
+            filter_courses(".block_course_list", "li", ".content", "a");
         }
 
         if ((".path-course .category-browse").length > 0) {
-            mark_courses(".path-course .category-browse", ".coursebox");
+            mark_courses(".path-course .category-browse", ".coursebox", ".coursename a");
         }
     });
 
@@ -240,19 +243,20 @@
         if (current_url.includes(page_id)) {
             $("#region-main .generalbox").text("");
             $("#region-main .generalbox").prepend(front_page.find(".frontpage-course-list-enrolled").clone());
-            filter_courses(".frontpage-course-list-enrolled", ".coursebox", false);
-            mark_courses(".frontpage-course-list-enrolled", ".coursebox", false);
+            filter_courses(".frontpage-course-list-enrolled", ".coursebox", false, ".coursename");
+            mark_courses(".frontpage-course-list-enrolled", ".coursebox", ".coursename");
         }
     });
 
     /* Kursübersicht */
-    $
-
     $(window).on("load", function () {
-        $(".courses").each(function () {
+        $(".block_course_list ul").each(function () {
             $(this).addClass("card-columns");
         });
-        $(".courses .coursebox").each(function () {
+        $(".courses, .block_course_list ul").each(function () {
+            $(this).addClass("card-columns");
+        });
+        $(".courses .coursebox, .block_course_list ul li").each(function () {
             $(this).addClass("card");
         });
     });
@@ -315,13 +319,21 @@
         });
     });
 
+
+    /*
+        Section Navigation
+
+    */
+
+    /* Workaround for bug in Hessisches Bildungslayout Template */
+    $(".single-section").prepend($("h3.sectionname")); 
+    $(".section-navigation.navigationtitle").hide();
     /*
         Activity Navigation
         -------------------
     */
     $(window).on("load", function () {
         $(".path-mod").each(function () {
-            console.info("add activity navigation");
             var topic_link = $(".breadcrumb-item:nth-last-child(2) a").attr('href');
             try {
                 var htmltext = $.ajax({url: topic_link, cache: false, async: false, dataType: "html"}).responseText;
@@ -329,8 +341,6 @@
                 console.log('Fehler beim Linkermitteln: ' + e);
             }
             topic_page = $(htmltext);
-            console.info("ajax activity-navigation");
-            console.info(topic_page);
             var activity_instances = $(topic_page).find(".single-section .activityinstance > a");
             var activity_title = $(".breadcrumb-item:nth-last-child(1)").text().trim();
             var topic_title = $(".breadcrumb-item:nth-last-child(2)").text().trim();
@@ -338,18 +348,15 @@
             var last_topic = $(topic_page).find(".mdl-left a");
             var actual_Acitivity = activity_instances.find(":contains(" + activity_title + ")").parent();
             var actual_acitivity_index = activity_instances.index(actual_Acitivity);
-            console.info(activity_instances, activity_title, next_topic, actual_Acitivity, actual_acitivity_index);
             $("#region-main .card-block").after('<div class="mt-5 mb-1 activity-navigation container-fluid"><div class="row"><div class="col-md-4"><div class="float-left back"></div></div><div class="col-md-4"><div class="mdl-align"></div></div><div class="col-md-4"><div class="float-right next"></div></div></div></div>');
             if (actual_acitivity_index == 1 && last_topic.length > 0) {
                 $(".activity-navigation .back").prepend(last_topic.first().clone());
             } else if (actual_acitivity_index > 1) {
-                console.info("get", activity_instances.length, actual_acitivity_index - 1)
                 $(".activity-navigation .back").prepend(activity_instances.get(actual_acitivity_index - 1).clone());
             }
             if (actual_acitivity_index + 1 == activity_instances.length && next_topic.length > 0) {
                 $(".activity-navigation .next").prepend(next_topic.first().clone());
             } else if (actual_acitivity_index + 1 < activity_instances.length) {
-                console.info("get", activity_instances.length, actual_acitivity_index + 1)
                 $(".activity-navigation .next").prepend(activity_instances.get(actual_acitivity_index + 1).clone());
             }
         });
@@ -362,31 +369,60 @@
     $(window).on("load", function () {
 
 
-        $('#page-content h2, section li.activity .activityinstance, section h3 a').each(function () {
-            if ($(this).is(':contains("Motivation")')) {
+        $('h3.section-title a, h3.sectionname span').each(function () {
+            if ( $(this).text().startsWith("Motivation")) {
                 $(this).prepend('<i class="fa fa-star" style="padding-right:10px;"/>');
-                $(this).addClass("activity-marker");
+                $(this).addClass("motivation template");
+                $(this).parent().addClass("motivation template");
             }
-            if ($(this).is(':contains("Erarbeitung")')) {
+            if ( $(this).text().startsWith("Erarbeitung")) {
                 $(this).prepend('<i class="fa fa-book" style="padding-right:10px;"/>');
-                $(this).addClass("activity-marker");
+                $(this).addClass("erarbeitung template");
+                $(this).parent().addClass("erarbeitung template");
             }
-            if ($(this).is(':contains("Regel")') || $(this).is(':contains("Übersicht")') || $(this).is(':contains("Zusammenfassung")')) {
+            if ( $(this).text().startsWith("Regel") || $(this).text().startsWith("Übersicht") || $(this).text().startsWith("Zusammenfassung") || $(this).text().startsWith("Fachkonzept") ) {
                 $(this).prepend('<i class="fa fa-info-circle" style="padding-right:10px;"/>');
-                $(this).addClass("activity-marker");
+                $(this).addClass("regel template");
+                $(this).parent().addClass("regel template");
             }
-            if ($(this).is(':contains("Übung")') || $(this).is(':contains("Anwenden")')) {
+            if ( $(this).text().startsWith("Übung") || $(this).text().startsWith("Anwenden") ) {
                 $(this).prepend('<i class="fa fa-arrow-circle-right" style="padding-right:10px;"/>');
-                $(this).addClass("activity-marker");
+                $(this).addClass("uebung template");
+                $(this).parent().addClass("uebung template");
             }
-            if ($(this).is(':contains("Transfer")')) {
+            if ( $(this).text().startsWith("Transfer")) {
                 $(this).prepend('<i class="fa fa-lightbulb" style="padding-right:10px;"/>');
-                $(this).addClass("activity-marker");
+                $(this).addClass("transfer template");
+                $(this).parent().addClass("transfer template");
             }
-            if ($(this).is(':contains("Reflexion")') || $(this).is(':contains("Fragen")') || $(this).is(':contains("Evaluation")')) {
+            if ( $(this).text().startsWith("Reflexion") || $(this).text().startsWith("Fragen") || $(this).text().startsWith("Evaluation") ) {
                 $(this).prepend('<i class="fa fa-question-circle" style="padding-right:10px;"/>');
-                $(this).addClass("activity-marker");
+                $(this).addClass("reflexion template");
+                $(this).parent().addClass("reflexion template");
             }
         });
     });
+
+    /*
+    Navigation
+    ----------
+    */
+
+    /* Navbar */
+    $(".navbar-light .navbar-nav.d-none > li.nav-item:first-child > a").wrapInner( "<div class='link_text'></div>");
+    $(".navbar-light .navbar-nav.d-none > li.nav-item:first-child > a").prepend('<i class="fa fa-search"/>');
+    $(".navbar-light .navbar-nav.d-none > li.nav-item:first-child > a .link_text").hide();
+
+    $(".navbar-light .navbar-nav.d-none > li.nav-item:last-child > a").wrapInner( "<div class='link_text'></div>");
+    $(".navbar-light .navbar-nav.d-none > li.nav-item:last-child > a").prepend('<i class="fa fa-question-circle"/>');
+    $(".navbar-light .navbar-nav.d-none > li.nav-item:last-child > a .link_text").hide();
+
+
+    /* 
+    Frontpage
+    ---------
+    */
+
+    $('nav a:contains("Startseite") .media-body').text("Übersicht")
+
 </script>
