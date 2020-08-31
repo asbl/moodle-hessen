@@ -3,6 +3,37 @@
 
 <script>
 
+    function naturalCompare(a, b) {
+        var ax = [],
+            bx = [];
+
+        a.replace(/(\d+)|(\D+)/g, function (_, $1, $2) {
+            ax.push([
+                $1 || Infinity,
+                $2 || ""
+            ])
+        });
+        b.replace(/(\d+)|(\D+)/g, function (_, $1, $2) {
+            bx.push([
+                $1 || Infinity,
+                $2 || ""
+            ])
+        });
+
+        while (ax.length && bx.length) {
+            var an = ax.shift();
+            var bn = bx.shift();
+            var nn = (an[0] - bn[0]) || an[1].localeCompare(bn[1]);
+            if (nn) 
+                return nn;
+            
+
+
+        }
+
+        return ax.length - bx.length;
+    }
+
     /* Ist User ein Lehrer */
 
     var isTeacher = $('#nav-drawer .list-group li:contains("Lehrerzimmer")').length>0;
@@ -75,26 +106,89 @@
     */
     function mark_courses(parent_element, filter_element, coursename_selector) {
         $(parent_element).find(filter_element).each(function () {
-            if ($(this).find(coursename_selector).text().trim().startsWith("#Klasse:")) {
+            var course_header_text = $(this).find(coursename_selector).text().trim();
+            if (course_header_text.startsWith("#Klasse:")) {
                 $(this).addClass("klassenkurs");
             }
-            if ($(this).find(coursename_selector).text().trim().startsWith("Fach:")) {
+            if (course_header_text.startsWith("Fach:")) {
                 $(this).addClass("fachkurs");
             }
-            if ($(this).find(coursename_selector).text().trim().startsWith("Thema:")) {
+            if (course_header_text.startsWith("Thema:")) {
                 $(this).addClass("themenkurs");
             }
-            if ($(this).find(coursename_selector).text().trim().indexOf("Lehrerzimmer") >= 0) {
+            if (course_header_text.startsWith("Vorlage:")) {
+                $(this).addClass("themenkurs vorlage");
+            }
+            if (course_header_text.indexOf("Lehrerzimmer") >= 0) {
                 $(this).addClass("lehrerzimmer");
             }
-            if ($(this).find(coursename_selector).text().trim().startsWith("Fachschaft")) {
+            if (course_header_text.startsWith("Fachschaft")) {
                 $(this).addClass("fachschaft");
             }
-            if ($(this).find(coursename_selector).text().trim().startsWith("AG")) {
+            if (course_header_text.startsWith("AG")) {
                 $(this).addClass("ag");
             }
-            if ($(this).find(coursename_selector).text().trim().startsWith("Fortbildung")) {
+            if (course_header_text.startsWith("Fortbildung")) {
                 $(this).addClass("fortbildung");
+            }
+            if (course_header_text.startsWith("Fach:")) {
+                if (course_header_text.indexOf("Deutsch") > 0) {
+                    $(this).addClass("deutsch");
+                }
+                if (course_header_text.indexOf("Mathe") > 0) {
+                    $(this).addClass("mathe");
+                }
+                if (course_header_text.indexOf("Biologie") > 0) {
+                    $(this).addClass("bio");
+                }
+                if (course_header_text.indexOf("Darstellendes Spiel") > 0) {
+                    $(this).addClass("ds");
+                }
+                if (course_header_text.indexOf("Englisch") > 0) {
+                    $(this).addClass("englisch");
+                }
+                if (course_header_text.indexOf("Erdkunde") > 0) {
+                    $(this).addClass("erdkunde");
+                }
+                if (course_header_text.indexOf("Ethik") > 0) {
+                    $(this).addClass("ethik");
+                }
+                if (course_header_text.indexOf("Französisch") > 0) {
+                    $(this).addClass("franz");
+                }
+                if (course_header_text.indexOf("Geschichte") > 0) {
+                    $(this).addClass("geschichte");
+                }
+                if (course_header_text.indexOf("Informatik") > 0) {
+                    $(this).addClass("informatik");
+                }
+                if (course_header_text.indexOf("Kunst") > 0) {
+                    $(this).addClass("kunst");
+                }
+                if (course_header_text.indexOf("Latein") > 0) {
+                    $(this).addClass("latein");
+                }
+                if (course_header_text.indexOf("Musik") > 0) {
+                    $(this).addClass("musik");
+                }
+                if (course_header_text.indexOf("Physik") > 0) {
+                    $(this).addClass("physik");
+                }
+                if (course_header_text.indexOf("PoWi") > 0) {
+                    $(this).addClass("powi");
+                }
+                if (course_header_text.indexOf("Religion") > 0) {
+                    $(this).addClass("reli");
+                }
+                if (course_header_text.indexOf("Chemie") > 0) {
+                    $(this).addClass("chemie");
+                }
+                if (course_header_text.indexOf("Spanisch") > 0) {
+                    $(this).addClass("spanisch");
+                }
+                if (course_header_text.indexOf("Sport") > 0) {
+                    $(this).addClass("sport");
+                }
             }
         });
     }
@@ -142,11 +236,8 @@
         function filter_schulkurse(parent_element, filter_element) {
             $(parent_element).find(filter_element).each(function () {
                 $(this).show();
-                if (!  ($(this).find(coursename_selector).text().trim().indexOf("Lehrerzimmer") >= 0 
-                || $(this).find(coursename_selector).text().trim().startsWith("Fachschaft") 
-                || $(this).find(coursename_selector).text().trim().startsWith("AG") 
-                || $(this).find(coursename_selector).text().trim().startsWith("Fortbildung") ) ) {
-                
+                if (!($(this).find(coursename_selector).text().trim().indexOf("Lehrerzimmer") >= 0 || $(this).find(coursename_selector).text().trim().startsWith("Fachschaft") || $(this).find(coursename_selector).text().trim().startsWith("AG") || $(this).find(coursename_selector).text().trim().startsWith("Fortbildung"))) {
+
                     $(this).hide();
                 }
             });
@@ -208,18 +299,88 @@
 
 
     }
-    $(window).on("load", function () {
+   
+        /* Markiere Kurse nach Klassen
+    */
+
+    function mark_courses_by_class(parent_element, filter_element, coursename_selector) {
+        $(parent_element).find(filter_element).each(function () {
+            var classes_string = $(this).find(coursename_selector).text().trim().match(new RegExp("\-\s?Klasse\:.*"));
+            if (classes_string) {
+                var classes = classes_string[0].split(":")[1].split(",");
+                var parent = $(this)
+                $.each(classes, function (index, value) {
+                    parent.addClass("kurs_klasse_" + value.trim())
+                });
+            }
+        });
+    }
+        function filter_courses_by_class(parent_element, filter_element, content_area_selector, coursename_selector) {
+
+        function filter_by_selector(parent_element, filter_element, selector) {
+            $(parent_element).find(filter_element).each(function () {
+                $(this).show();
+                if (!$(this).hasClass(selector)) {
+                    $(this).hide();
+                }
+            });
+        }
+
+        filter_values = $('*[class*="kurs_klasse_"]');
+        var classes_array = [];
+        $.each(filter_values, function (filter_index, filter_value) {
+            var header = $(filter_value).find(".coursename a");
+            var classes = $(filter_value).find(".coursename a").text().trim().match(new RegExp("\-\s?Klasse\:.*"))[0].split(":")[1].split(",");
+            $.each(classes, function (class_index, class_value) {
+                if (classes_array.indexOf(class_value.trim()) === -1) {
+                    classes_array.push(class_value.trim());
+                }
+            });
+        });
+        classes_array.sort(naturalCompare);
+        if (classes_array) {
+            var filter_class = $('<div class="courses_filter"></div>')
+            $.each(classes_array, function (index, value) {
+                filter_class.append('<button class="btn filter_klasse">' + value + '</button>');
+            });
+        }
+        if (content_area_selector) {
+            $(parent_element).find(content_area_selector).prepend(filter_class);
+        } else {
+            $(parent_element).before(filter_class);
+        }
+        filter_class.find(".btn.filter_klasse").each(function (index) {
+            $(this).on("click", function () {
+                filter_by_selector(parent_element, filter_element, "kurs_klasse_" + $(this).text().trim());
+                $(this).addClass("active");
+                $(this).siblings().removeClass('active');
+            });
+        });
+    }
+    
+    
+        $(window).on("load", function () {
         if ($(".frontpage-course-list-enrolled").length > 0) {
-            mark_courses(".frontpage-course-list-enrolled", ".coursebox",  ".coursename a");
+            mark_courses(".frontpage-course-list-enrolled", ".coursebox", ".coursename a");
             filter_courses(".frontpage-course-list-enrolled", ".coursebox", false, ".coursename");
         }
+        /* Block in Dashboard */
         if ($(".block_course_list").length > 0) {
             mark_courses(".block_course_list", "li", "a");
             filter_courses(".block_course_list", "li", ".content", "a");
         }
-
+        /* Kurse in Kursbereichen */
         if ((".path-course .category-browse").length > 0) {
             mark_courses(".path-course .category-browse", ".coursebox", ".coursename a");
+        }
+        /* Themenkurse*/
+        if ((".path-course .category-browse").length > 0 && $('.breadcrumb li a:contains("Themenkurse")').length > 0) {
+            mark_courses_by_class(".path-course .category-browse", ".coursebox", ".coursename a")
+            filter_courses_by_class(".path-course .category-browse", ".coursebox", false, ".coursename a")
+        }
+        if (("#page-course-search .course-search-result").length > 0) {
+            mark_courses(".course-search-result-search", ".coursebox", ".coursename a")
+            filter_courses(".course-search-result-search", ".coursebox", false, ".coursename a")
         }
     });
 
@@ -259,7 +420,26 @@
         $(".courses .coursebox, .block_course_list ul li").each(function () {
             $(this).addClass("card");
         });
+        
+         var page_id = 9460;
+        // Die Seite wurde als Aktivität auf der Startseite angelegt und dort verborgen
+        frontpage_url = "https://mo5235.schule.hessen.de/?redirect=0";
+        try {
+            var htmltext = $.ajax({url: frontpage_url, cache: false, async: false, dataType: "html"}).responseText;
+        } catch (e) {
+            console.log('Fehler beim Linkermitteln: ' + e);
+        }
+        var front_page = $(htmltext);
+        current_url = window.location.search;
+        if (current_url.includes(page_id)) {
+            $("#region-main .generalbox").text("");
+            $("#region-main .generalbox").prepend(front_page.find(".frontpage-course-list-enrolled").clone());
+            filter_courses(".frontpage-course-list-enrolled", ".coursebox", false, ".coursename");
+            mark_courses(".frontpage-course-list-enrolled", ".coursebox", ".coursename");
+        }
     });
+    
+    
 
     /*
     Backlinks
@@ -424,5 +604,53 @@
     */
 
     $('nav a:contains("Startseite") .media-body').text("Übersicht")
+    
+       /*
+    Klassenkurs
+    */
+    $('.path-course .section .content .sectionname:contains("Fachkurse")').each(function () {
+        var section = $(this).parent();
+        $(this).after('<div class="fachkursliste"></div>').parent();
+        fachkursliste = $(this).parent().find(".fachkursliste");
+        /*var link_to_fachkurse = $(".breadcrumb .breadcrumb-item:nth-last-child(2) a").attr('href');
+        var link_to_jahrgang =  $(".breadcrumb .breadcrumb-item:nth-last-child(3) a").attr('href');
+        fachkursliste.append('<a class="btn btn-primary" href="'+link_to_fachkurse+'"><h3>Alle Fachkurse in deiner Klasse</h3></a>');
+        fachkursliste.append('<a class="btn btn-primary" href="'+link_to_jahrgang+'"><h3>Alle Kurse im Jahrgang (z.B. Religion, Fremdsprachen, ...)</h3></a>');*/
+        try {
+            var htmltext = $.ajax({url: $(".breadcrumb .breadcrumb-item:nth-last-child(2) a").attr('href'), 
+                                async: false,
+                                dataType: "html",
+                                cache: false,
+                                complete: function(request)          
+                                {   
+                                    var courses_page = $(request.responseText);
+                                    fachkursliste.prepend(courses_page.find(".category-browse").clone().wrap('<div class="kursliste klasse">').parent());
+                                    mark_courses(".path-course .category-browse", ".coursebox", ".coursename a");
+                                    mark_courses(".kursliste.klasse", ".coursebox", ".coursename a");
+                                }, 
+                                }).responseText;
+        } catch (e) {
+            console.log('Fehler beim Linkermitteln: ' + e);
+        }
+        try {
+            var htmltext = $.ajax({url: $(".breadcrumb .breadcrumb-item:nth-last-child(3) a").attr('href'), 
+                                async: false,
+                                cache: false,
+                                dataType: "html",
+                                complete: function(request)          
+                                {   
+                                    var jahrgang_page = $(request.responseText);
+                                    fachkursliste.append(jahrgang_page.find(".category-browse").clone().wrap('<div class="kursliste jahrgang">').parent());
+                                    fachkursliste.find(".jahrgang").before("<h3>Kurse im Jahrgang</h3>")
+                                    mark_courses(".kursliste.jahrgang", ".coursebox", ".coursename a");
+                                }, 
+                                }).responseText;
+        } catch (e) {
+            console.log('Fehler beim Linkermitteln: ' + e);
+        }
+       /* var courses_page = $(htmltext);
+       # $(this).parent().find(".kursliste").after(courses_page.find(".category-browse").clone().wrap('<div class="kursliste jahrgang">').parent());
+        $(this).parent().find(".jahrgang").before("<h3>Kurse im Jahrgang</h3>")*/
+    });
 
 </script>
